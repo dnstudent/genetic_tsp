@@ -1,0 +1,5 @@
+{
+  "name": "genetic-tsp",
+  "version": "0.0.1",
+  "dependencies": ["xtensor", "xsimd", "catch2"]
+}
