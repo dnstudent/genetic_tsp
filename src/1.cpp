@@ -12,7 +12,6 @@
 #include "config.hpp"
 #include "genetic_algorithms/tsp_ga_static.hpp"
 #include "genetic_process.hpp"
-#include "lcg.hpp"
 #include "utils.hpp"
 
 #include <rapidcsv.h>

@@ -44,7 +44,7 @@ public:
   [[maybe_unused]] double Rannyu();
   result_type operator()();
   [[nodiscard]] static constexpr result_type min() { return 0ULL; }
-  [[nodiscard]] static constexpr result_type max() {
+  [[nodiscard]] [[maybe_unused]] static constexpr result_type max() {
     // 2^48 - 1
     return 281474976710655ULL;
   }

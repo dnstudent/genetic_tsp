@@ -11,7 +11,6 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <numbers>
 #include <stdexcept>
 
 #include "ariel_random.hpp"
@@ -36,7 +35,7 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 [[maybe_unused]] double ARandom ::Gauss(double mean, double sigma) {
   double s = Rannyu();
   double t = Rannyu();
-  double x = sqrt(-2 * log(1 - s)) * cos(2 * std::numbers::pi * t);
+  double x = sqrt(-2 * log(1 - s)) * cos(2 * M_PI * t);
   return mean + x * sigma;
 }
 

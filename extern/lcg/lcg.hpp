@@ -38,10 +38,10 @@ public:
   typedef uint_fast64_t result_type;
   Rannyu() = delete;
   Rannyu(result_type seed, result_type c) : m_x(seed), m_c(c) {}
-  Rannyu(const std::string_view &seeds_source, const std::string_view &primes_source,
-         size_t primes_line = 0)
-      : Rannyu(read_seed<uint_fast64_t>(seeds_source),
-               read_primes<uint_fast64_t>(primes_source, primes_line)) {}
+  Rannyu(const std::string_view &seeds_source,
+         const std::string_view &primes_source, size_t primes_line = 0)
+      : Rannyu(lcg::read_seed<uint_fast64_t>(seeds_source),
+               lcg::read_primes<uint_fast64_t>(primes_source, primes_line)) {}
 
   constexpr result_type operator()() {
     m_x = (m_a * m_x + m_c) % m_m;
@@ -54,7 +54,8 @@ public:
 private:
   __uint128_t m_x;
   const __uint128_t m_c;
-  const __uint128_t m_a{twop12to10<result_type>(502ULL, 1521ULL, 4071ULL, 2107ULL)};
+  const __uint128_t m_a{
+      lcg::twop12to10<result_type>(502ULL, 1521ULL, 4071ULL, 2107ULL)};
   static constexpr __uint128_t m_m{281474976710656ULL};
 };
 } // namespace lcg

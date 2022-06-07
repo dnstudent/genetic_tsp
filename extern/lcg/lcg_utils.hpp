@@ -5,19 +5,18 @@
 #ifndef GENETIC_TSP_LCG_UTILS_HPP
 #define GENETIC_TSP_LCG_UTILS_HPP
 
-#include <concepts>
 #include <fstream>
 #include <string_view>
 
 namespace lcg {
-template <std::unsigned_integral uint>
+template <typename uint>
 constexpr uint twop12to10(uint a, uint b, uint c, uint d) {
   return d +
          static_cast<uint>(4096) *
              (c + static_cast<uint>(4096) * (b + static_cast<uint>(4096) * a));
 }
 
-template <std::unsigned_integral uint>
+template <typename uint>
 uint read_primes(const std::string_view &primes_source,
                  size_t primes_line = 0) {
   std::ifstream primes((std::string(primes_source)));
@@ -41,8 +40,7 @@ uint read_primes(const std::string_view &primes_source,
   }
 }
 
-template <std::unsigned_integral uint>
-uint read_seed(const std::string_view &seeds_source) {
+template <typename uint> uint read_seed(const std::string_view &seeds_source) {
   std::ifstream input((std::string(seeds_source)));
   std::string property;
   if (input.is_open()) {

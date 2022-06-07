@@ -142,7 +142,8 @@ void swap_order_by_rank(InputIt1 first_1, InputIt1 last_1, InputIt2 first_2,
 }
 
 template <typename InputIt1, typename InputIt2>
-inline void swap_order_by_rank_n(InputIt1 first_1, size_t N, InputIt2 first_2) {
+[[maybe_unused]] inline void swap_order_by_rank_n(InputIt1 first_1, size_t N,
+                                                  InputIt2 first_2) {
   return swap_order_by_rank_n(first_1, N, first_2, std::less<>());
 }
 

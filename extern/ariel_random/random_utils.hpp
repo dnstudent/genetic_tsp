@@ -14,7 +14,7 @@
 #include "ariel_random.hpp"
 
 // Fisher-Yates algorithm with ARandom
-template <std::random_access_iterator It>
+template <typename It>
 void random_shuffle(It first, const It last, ARandom &rng) {
   const auto N = std::distance(first, last);
   if (N <= 1)
@@ -27,9 +27,10 @@ void random_shuffle(It first, const It last, ARandom &rng) {
   }
 }
 
-template <std::unsigned_integral uint>
-uint read_primes(uint &a, uint &b, const std::string_view &primes_source,
-                 size_t primes_line = 0) {
+template <typename uint>
+[[maybe_unused]] uint read_primes(uint &a, uint &b,
+                                  const std::string_view &primes_source,
+                                  size_t primes_line = 0) {
   std::ifstream primes((std::string(primes_source)));
   if (primes.is_open()) {
     for (size_t i = 0; i + 1 < primes_line && !primes.eof(); i++)
@@ -50,8 +51,8 @@ uint read_primes(uint &a, uint &b, const std::string_view &primes_source,
   }
 }
 
-template <std::unsigned_integral uint>
-uint read_seed(const std::string_view &seeds_source) {
+template <typename uint>
+[[maybe_unused]] uint read_seed(const std::string_view &seeds_source) {
   std::ifstream input((std::string(seeds_source)));
   std::string property;
   if (input.is_open()) {

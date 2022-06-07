@@ -22,7 +22,6 @@
 #include <indicators/dynamic_progress.hpp>
 #include <indicators/progress_bar.hpp>
 
-#include "concepts.hpp"
 #include "utils.hpp"
 
 namespace genetic {
@@ -159,7 +158,7 @@ public:
                                population_buffer.data(), first_evaluation,
                                ranks.begin(), individual_per_process,
                                (i < n_blocks - 1));
-      if (i < n_blocks - 1) [[likely]] {
+      if (i < n_blocks - 1) {
         std::shuffle(population_buffer.begin(), population_buffer.end(), rng);
       }
 #endif
@@ -192,7 +191,7 @@ private:
                            int individual_per_process, bool all) {
     rank_n(first_evaluation, population_size, first_rank);
     order_by_n(first_individual, population_size, first_rank);
-    if (all) [[likely]]
+    if (all)
       MPI_Allgather(&*first_individual, individual_per_process,
                     GA::individual_mpi(), first_buffer, individual_per_process,
                     GA::individual_mpi(), MPI_COMM_WORLD);
@@ -226,13 +225,12 @@ private:
     cross_mut_eval(first_individual, population_size, first_parent,
                    first_evaluation, mutation_probability, rng);
 
-    for (size_t i = 1; i < n_iterations; i++)
-      [[likely]] {
-        select_parents(first_individual, population_size, first_parent,
-                       first_evaluation, rng);
-        cross_mut_eval(first_individual, population_size, first_parent,
-                       first_evaluation, mutation_probability, rng);
-      }
+    for (size_t i = 1; i < n_iterations; i++) {
+      select_parents(first_individual, population_size, first_parent,
+                     first_evaluation, rng);
+      cross_mut_eval(first_individual, population_size, first_parent,
+                     first_evaluation, mutation_probability, rng);
+    }
   }
 
   template <typename PopulationIt, typename BufferIt, typename EvaluationsIt,

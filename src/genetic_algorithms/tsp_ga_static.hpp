@@ -94,7 +94,7 @@ public:
   }
 
 #ifdef USE_MPI
-  static constexpr MPI_Datatype individual_mpi() {
+  static MPI_Datatype individual_mpi() {
     MPI_Datatype i_m;
     MPI_Type_contiguous(N_CITIES - 1, MPI_UNSIGNED_SHORT, &i_m);
     MPI_Type_commit(&i_m);
