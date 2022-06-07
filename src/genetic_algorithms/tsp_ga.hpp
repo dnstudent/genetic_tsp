@@ -132,10 +132,18 @@ private:
 
   [[nodiscard]] FitnessMeasure distance_l1(const size_t x,
                                            const size_t y) const {
+#if __cplusplus >= 201703L
     return std::transform_reduce(
         std::cbegin(m_city_coordinates[x]), std::cend(m_city_coordinates[x]),
         std::cbegin(m_city_coordinates[y]), FitnessMeasure(0), std::plus<>(),
         [](const auto xi, const auto yi) { return std::abs(xi - yi); });
+#else
+    FitnessMeasure distance = 0;
+    for (auto i = 0U; i < m_city_coordinates[x].size(); i++) {
+      distance += std::abs(m_city_coordinates[x][i] - m_city_coordinates[y][i]);
+    }
+    return distance;
+#endif
   }
 };
 
