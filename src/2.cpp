@@ -1,8 +1,6 @@
 #include <fstream>
+#include <valarray>
 #include <vector>
-
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xindex_view.hpp>
 
 #include <cxxopts.hpp>
 #include <rapidcsv.h>
@@ -13,7 +11,7 @@
 
 #include "ariel_random.hpp"
 #include "config.hpp"
-#include "genetic_algorithms/tsp_ga_static.hpp"
+#include "genetic_algorithms/tsp_ga.hpp"
 #include "genetic_process.hpp"
 #include "utils.hpp"
 
@@ -28,7 +26,7 @@ int main(int argc, char *argv[]) {
   options.add_options()
       ("m,n_iterations", "Number of iterations per block", value<size_t>()->default_value("6000"))
       ("n,n_recomb", "Number of recombinations", value<size_t>()->default_value("20"))
-      ("p,population_size", "Per-process population size", value<size_t>()->default_value("1000"))
+      ("p,population_size", "Population size", value<size_t>()->default_value("1000"))
       ("h,help", "Print this message");
   // clang-format on
   auto result = options.parse(argc, argv);
@@ -57,7 +55,7 @@ int main(int argc, char *argv[]) {
           size_t(process_rank));
   //  std::minstd_rand rng((unsigned(process_rank)));
 
-  using point = xt::xtensor_fixed<double, xt::xshape<2>>;
+  using point = std::valarray<double>;
   std::array<point, N_CITIES> coordinates;
   csv::Document capitals(TSP_PATH "American_capitals.csv");
   const auto longitudes = capitals.GetColumn<double>("longitude");

@@ -8,8 +8,8 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 *****************************************************************
 *****************************************************************/
 
-#ifndef __ARIEL_RANDOM__
-#define __ARIEL_RANDOM__
+#ifndef ARIEL_RANDOM_
+#define ARIEL_RANDOM_
 
 #include <cstddef>
 #include <limits>

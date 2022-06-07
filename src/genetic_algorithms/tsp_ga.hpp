@@ -2,8 +2,8 @@
 // Created by Davide Nicoli on 30/05/22.
 //
 
-#ifndef GENETIC_TSP_TSP_GA_STATIC_HPP
-#define GENETIC_TSP_TSP_GA_STATIC_HPP
+#ifndef GENETIC_TSP_TSP_GA_HPP
+#define GENETIC_TSP_TSP_GA_HPP
 
 #include "config.hpp"
 
@@ -12,10 +12,6 @@
 #include <random>
 #include <utility>
 #include <vector>
-
-#include <xtensor/xarray.hpp>
-#include <xtensor/xexpression.hpp>
-#include <xtensor/xnorm.hpp>
 
 #ifdef USE_MPI
 #include <mpi.h>
@@ -51,12 +47,17 @@ public:
 
   FitnessMeasure evaluate(const Individual &individual) {
     // The first city is fixed
-    FitnessMeasure total_distance{xt::norm_l1(
-        m_city_coordinates[*individual.cbegin()] - m_city_coordinates[0])()};
-    for (auto i = std::next(individual.cbegin()); i < individual.cend(); i++) {
-      total_distance += xt::norm_l1(m_city_coordinates[*i] -
-                                    m_city_coordinates[*std::prev(i)])(0);
-    }
+    FitnessMeasure total_distance{distance_l1(0, *individual.cbegin())};
+    //    for (auto i = std::next(individual.cbegin()); i < individual.cend();
+    //    i++) {
+    //      total_distance += xt::norm_l1(m_city_coordinates[*i] -
+    //                                    m_city_coordinates[*std::prev(i)])(0);
+    //    }
+    total_distance = std::transform_reduce(
+        individual.cbegin(), std::prev(individual.cend()),
+        std::next(individual.cbegin()), total_distance, std::plus<>(),
+        [&](const auto i, const auto j) { return distance_l1(i, j); });
+
     return std::max(static_cast<FitnessMeasure>(0),
                     static_cast<FitnessMeasure>(1664) - total_distance);
   }
@@ -127,6 +128,14 @@ private:
     std::swap_ranges(next(first, cuts[0]), next(first, cuts[0] + length),
                      next(first, cuts[2]));
   }
+
+  [[nodiscard]] FitnessMeasure distance_l1(const size_t x,
+                                           const size_t y) const {
+    return std::transform_reduce(
+        std::cbegin(m_city_coordinates[x]), std::cend(m_city_coordinates[x]),
+        std::cbegin(m_city_coordinates[y]), FitnessMeasure(0), std::plus<>(),
+        [](const auto xi, const auto yi) { return std::abs(xi - yi); });
+  }
 };
 
-#endif // GENETIC_TSP_TSP_GA_STATIC_HPP
+#endif // GENETIC_TSP_TSP_GA_HPP

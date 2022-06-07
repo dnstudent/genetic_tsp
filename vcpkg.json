@@ -1,9 +1,7 @@
 {
   "name": "genetic-tsp",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": [
-    "xtensor",
-    "xsimd",
     "catch2",
     "rapidcsv",
     "indicators",

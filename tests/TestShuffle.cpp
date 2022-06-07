@@ -5,7 +5,6 @@
 #include <catch2/catch.hpp>
 #include <chrono>
 #include <random>
-#include <sstream>
 
 #include "ariel_random.hpp"
 #include "config.hpp"

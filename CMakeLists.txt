@@ -37,8 +37,6 @@ else ()
 endif ()
 
 find_package(Catch2 CONFIG REQUIRED)
-find_package(xtensor CONFIG REQUIRED)
-find_package(xsimd CONFIG REQUIRED)
 find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
 find_package(indicators CONFIG REQUIRED)
 find_package(cxxopts CONFIG REQUIRED)
@@ -47,7 +45,6 @@ add_library(rapidcsv INTERFACE)
 target_include_directories(rapidcsv INTERFACE ${RAPIDCSV_INCLUDE_DIRS})
 
 list(APPEND QOL_TARGETS cxxopts::cxxopts indicators::indicators rapidcsv project_warnings)
-list(APPEND XTENSOR_TARGETS xtensor xtensor::optimize xtensor::use_xsimd)
 
 configure_file(
         "${PROJECT_SOURCE_DIR}/src/include/config.hpp.in"

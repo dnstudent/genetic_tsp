@@ -2,14 +2,12 @@
 #include <memory>
 #include <numeric>
 #include <random>
+#include <valarray>
 #include <vector>
-
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xindex_view.hpp>
 
 #include "ariel_random.hpp"
 #include "config.hpp"
-#include "genetic_algorithms/tsp_ga_static.hpp"
+#include "genetic_algorithms/tsp_ga.hpp"
 #include "genetic_process.hpp"
 #include "utils.hpp"
 
@@ -30,7 +28,7 @@ namespace csv = rapidcsv;
 template <typename It>
 [[maybe_unused]] constexpr auto make_circle_points(double radius, It first,
                                                    size_t N) {
-  using point = xt::xtensor_fixed<double, xt::xshape<2>>;
+  using point = std::valarray<double>;
   for (size_t i = 0; i < N; i++) {
     *snext(first, i) =
         radius * point{std::cos(2 * double(i) * M_PI / double(N)),
@@ -41,25 +39,26 @@ template <typename It>
 template <typename It, class RNG>
 [[maybe_unused]] auto make_square_points(double side, It first, size_t N,
                                          RNG &rng) {
-  using point = xt::xtensor_fixed<double, xt::xshape<2>>;
+  using point = std::valarray<double>;
   std::uniform_real_distribution<double> m_pdist(0, side);
   std::generate_n(first, N, [&]() {
     return point{m_pdist(rng), m_pdist(rng)};
   });
 }
 
-int main(int argc, char *argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
+  int process_rank = 1;
+#ifdef USE_MPI
   MPI_Init(&argc, &argv);
-  int process_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
-
+#endif
   using Rng = ARandom;
   Rng rng(SEEDS_PATH "seed.in", PRIMES_PATH "primes32001.in",
           size_t(process_rank));
   //  std::minstd_rand rng((unsigned(process_rank)));
 
-  using point = xt::xtensor_fixed<double, xt::xshape<2>>;
+  using point = std::valarray<double>;
   //  const std::vector<point> coordinates{{0, 0}, {2, 0}, {2, 2}, {0, 2}};
   std::array<point, N_CITIES> coordinates;
   make_circle_points(1., coordinates.begin(), N_CITIES);
@@ -73,12 +72,6 @@ int main(int argc, char *argv[]) {
 
   gp.mpi_run(population.begin(), POPULATION_SIZE, evaluations.begin(), N_ITER,
              N_BLOCKS, 0.05, rng);
-  /*
-  #if POPULATION_SIZE <= 1000
-    gp.run<POPULATION_SIZE>(population.begin(), evaluations.begin(), N_ITER,
-  0.1, rng); #else gp.run(population.begin(), POPULATION_SIZE,
-  evaluations.begin(), N_ITER, 0.1, rng); #endif
-   */
 
   if (process_rank == 0) {
     std::vector<int> ranks(POPULATION_SIZE);
@@ -94,13 +87,8 @@ int main(int argc, char *argv[]) {
       std::cout << '\t' << evaluations[i] << '\n';
     }
   }
-
-  /*csv::Document table;
-  for (auto i = 0U; i < population.size(); i++) {
-    table.InsertColumn(i, std::vector<unsigned int>(population[i].cbegin(),
-                                                    population[i].cend()));
-  }
-  table.Save("p.csv");*/
+#ifdef USE_MPI
   MPI_Finalize();
+#endif
   return 0;
 }
