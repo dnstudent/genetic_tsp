@@ -71,8 +71,8 @@ int main(int argc, char *argv[]) {
   CONTAINER(Individual, population){};
   CONTAINER(double, evaluations){};
 
-  gp.mpi_run<POPULATION_SIZE>(population.begin(), evaluations.begin(), N_ITER,
-                              N_BLOCKS, 0.05, rng);
+  gp.mpi_run(population.begin(), POPULATION_SIZE, evaluations.begin(), N_ITER,
+             N_BLOCKS, 0.05, rng);
   /*
   #if POPULATION_SIZE <= 1000
     gp.run<POPULATION_SIZE>(population.begin(), evaluations.begin(), N_ITER,
