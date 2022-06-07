@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <array>
-#include <concepts>
 #include <cstddef>
 #include <iostream>
 #include <random>
@@ -78,9 +77,10 @@ public:
   }
 
   template <typename PopulationIt, typename EvaluationsIt, class RNG>
-  void run(PopulationIt first_individual, size_t population_size,
-           EvaluationsIt first_evaluation, size_t n_iterations,
-           double mutation_probability, RNG &rng) {
+  [[maybe_unused]] void run(PopulationIt first_individual,
+                            size_t population_size,
+                            EvaluationsIt first_evaluation, size_t n_iterations,
+                            double mutation_probability, RNG &rng) {
     generate(first_individual, population_size, rng);
     evaluate(first_individual, population_size, first_evaluation);
 
@@ -94,8 +94,9 @@ public:
 
   template <size_t POPULATION_SIZE, typename PopulationIt,
             typename EvaluationsIt, class RNG>
-  void run(PopulationIt first_individual, EvaluationsIt first_evaluation,
-           size_t n_iterations, double mutation_probability, RNG &rng) {
+  [[maybe_unused]] void run(PopulationIt first_individual,
+                            EvaluationsIt first_evaluation, size_t n_iterations,
+                            double mutation_probability, RNG &rng) {
     static_assert(POPULATION_SIZE <= 1000);
     generate(first_individual, POPULATION_SIZE, rng);
     evaluate(first_individual, POPULATION_SIZE, first_evaluation);
@@ -108,15 +109,14 @@ public:
                     first_evaluation, n_iterations, mutation_probability, rng);
   }
 
-  template <size_t POPULATION_SIZE, typename PopulationIt,
-            typename EvaluationsIt, class RNG>
-  void mpi_run(PopulationIt first_individual, EvaluationsIt first_evaluation,
-               size_t iterations_per_block, size_t n_blocks,
-               double mutation_probability, RNG &rng) {
+  template <typename PopulationIt, typename EvaluationsIt, class RNG>
+  void mpi_run(PopulationIt first_individual, size_t population_size,
+               EvaluationsIt first_evaluation, size_t iterations_per_block,
+               size_t n_blocks, double mutation_probability, RNG &rng) {
     using namespace indicators;
 
-    generate(first_individual, POPULATION_SIZE, rng);
-    evaluate(first_individual, POPULATION_SIZE, first_evaluation);
+    generate(first_individual, population_size, rng);
+    evaluate(first_individual, population_size, first_evaluation);
 
     if (n_blocks == 0)
       return;
@@ -128,21 +128,20 @@ public:
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_id);
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
 #endif
-    if (POPULATION_SIZE % size_t(n_procs) != 0) {
+    if (population_size % size_t(n_procs) != 0ULL) {
       throw std::runtime_error(
           "Population size should be a multiple of the number of processes.\n"
           "population_size: " +
-          std::to_string(POPULATION_SIZE) +
+          std::to_string(population_size) +
           "\tn_procs: " + std::to_string(n_procs));
     }
 #ifdef USE_MPI
-    const auto individual_per_process = signed(POPULATION_SIZE) / n_procs;
-
-    std::array<size_t, POPULATION_SIZE> ranks;
+    const auto individual_per_process = signed(population_size) / n_procs;
+    std::vector<size_t> ranks(population_size);
 #endif
-    std::vector<Individual> population_buffer(POPULATION_SIZE);
+    std::vector<Individual> population_buffer(population_size);
 
-    select_parents(first_individual, POPULATION_SIZE, population_buffer.begin(),
+    select_parents(first_individual, population_size, population_buffer.begin(),
                    first_evaluation, rng);
 
     ProgressBar pbar{option::MaxProgress{n_blocks},
@@ -150,11 +149,11 @@ public:
                      option::ShowRemainingTime{true}, option::BarWidth{80}};
 
     for (auto i = 0U; i < n_blocks; i++) {
-      loop_from_parents(first_individual, POPULATION_SIZE,
+      loop_from_parents(first_individual, population_size,
                         population_buffer.begin(), first_evaluation,
                         iterations_per_block, mutation_probability, rng);
 #ifdef USE_MPI
-      combine_best_individuals(first_individual, POPULATION_SIZE,
+      combine_best_individuals(first_individual, population_size,
                                population_buffer.data(), first_evaluation,
                                ranks.begin(), individual_per_process,
                                (i < n_blocks - 1));
@@ -165,7 +164,7 @@ public:
       if (mpi_id == 0) {
         pbar.tick();
         const auto best_fitness = std::max_element(
-            first_evaluation, snext(first_evaluation, POPULATION_SIZE));
+            first_evaluation, snext(first_evaluation, population_size));
         pbar.set_option(option::PostfixText{"best fitness: " +
                                             std::to_string(*best_fitness)});
       }

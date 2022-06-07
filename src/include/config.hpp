@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEFAULT_OUTPUT "@CMAKE_OUT_DIR/"
+#define DEFAULT_OUTPUT "/"
 #define DEFAULT_SAMPLE_SIZE 1E6
 #define DEFAULT_N_BLOCKS 1E2
 #define SEEDS_PATH "/Users/davidenicoli/Library/CloudStorage/OneDrive-UniversitàdegliStudidiMilano/Uni/Workspace/LabSiNum/genetic_tsp/data/seeds/"

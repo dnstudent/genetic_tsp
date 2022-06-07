@@ -17,14 +17,7 @@
 #include "genetic_process.hpp"
 #include "utils.hpp"
 
-#define N_CITIES 50ULL
-#define POPULATION_SIZE 994ULL
-#if POPULATION_SIZE <= 1'000ULL
-#define CONTAINER(t, name)                                                     \
-  std::array<t, POPULATION_SIZE> name {}
-#else
-#define CONTAINER(t, name) std::vector<t> name(POPULATION_SIZE)
-#endif
+#define N_CITIES 50UL
 
 namespace csv = rapidcsv;
 
@@ -35,6 +28,7 @@ int main(int argc, char *argv[]) {
   options.add_options()
       ("m,n_iterations", "Number of iterations per block", value<size_t>()->default_value("6000"))
       ("n,n_recomb", "Number of recombinations", value<size_t>()->default_value("20"))
+      ("p,population_size", "Per-process population size", value<size_t>()->default_value("1000"))
       ("h,help", "Print this message");
   // clang-format on
   auto result = options.parse(argc, argv);
@@ -43,8 +37,9 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  const auto N_ITER = result["m"].as<size_t>();
-  const auto N_BLOCKS = result["n"].as<size_t>();
+  const size_t N_ITER = result["m"].as<size_t>();
+  const size_t N_BLOCKS = result["n"].as<size_t>();
+  const size_t POPULATION_SIZE = result["p"].as<size_t>();
 
   int process_rank = 0;
 #ifdef USE_MPI
@@ -76,11 +71,11 @@ int main(int argc, char *argv[]) {
   genetic::Process gp(std::move(ga));
 
   using Individual = typename TSP<point, N_CITIES>::Individual;
-  CONTAINER(Individual, population);
-  CONTAINER(double, evaluations);
+  std::vector<Individual> population(POPULATION_SIZE);
+  std::vector<double> evaluations(POPULATION_SIZE);
 
-  gp.mpi_run<POPULATION_SIZE>(population.begin(), evaluations.begin(), N_ITER,
-                              N_BLOCKS, 0.05, rng);
+  gp.mpi_run(population.begin(), POPULATION_SIZE, evaluations.begin(), N_ITER,
+             N_BLOCKS, 0.05, rng);
 
   if (process_rank == 0) {
     std::vector<int> ranks(POPULATION_SIZE);
@@ -89,7 +84,7 @@ int main(int argc, char *argv[]) {
     order_by(population.begin(), population.end(), ranks.cbegin());
     order_by(evaluations.begin(), evaluations.end(), ranks.cbegin());
 
-    for (size_t i = 0; i < std::min(50ULL, POPULATION_SIZE); i++) {
+    for (size_t i = 0; i < std::min(50UL, POPULATION_SIZE); i++) {
       for (auto j : population[i]) {
         std::cout << j << ' ';
       }
@@ -97,7 +92,7 @@ int main(int argc, char *argv[]) {
     }
 
     csv::Document solution;
-    for (auto i = 0U; i < std::min(50ULL, POPULATION_SIZE); i++) {
+    for (auto i = 0U; i < std::min(50UL, POPULATION_SIZE); i++) {
       solution.InsertRow(i, std::vector<unsigned int>(population[i].cbegin(),
                                                       population[i].cend()));
     }

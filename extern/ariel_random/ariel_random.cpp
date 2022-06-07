@@ -64,12 +64,12 @@ ARandom::result_type ARandom ::operator()() {
   result_type i2 = m_l2 * m_m4 + m_l3 * m_m3 + m_l4 * m_m2 + m_n2;
   result_type i3 = m_l3 * m_m4 + m_l4 * m_m3 + m_n3;
   result_type i4 = m_l4 * m_m4 + m_n4;
-  m_l4 = i4 % 4096ULL;
-  i3 = i3 + i4 / 4096ULL;
-  m_l3 = i3 % 4096ULL;
-  i2 = i2 + i3 / 4096ULL;
-  m_l2 = i2 % 4096ULL;
-  m_l1 = (i1 + i2 / 4096ULL) % 4096ULL;
+  m_l4 = i4 % 4096UL;
+  i3 = i3 + i4 / 4096UL;
+  m_l3 = i3 % 4096UL;
+  i2 = i2 + i3 / 4096UL;
+  m_l2 = i2 % 4096UL;
+  m_l1 = (i1 + i2 / 4096UL) % 4096UL;
   return b4096tob10<result_type>(m_l1, m_l2, m_l3, m_l4);
 }
 

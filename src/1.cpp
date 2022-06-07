@@ -1,6 +1,5 @@
 #include <cmath>
 #include <memory>
-#include <numbers>
 #include <numeric>
 #include <random>
 #include <vector>
@@ -34,8 +33,8 @@ template <typename It>
   using point = xt::xtensor_fixed<double, xt::xshape<2>>;
   for (size_t i = 0; i < N; i++) {
     *snext(first, i) =
-        radius * point{std::cos(2 * double(i) * std::numbers::pi / double(N)),
-                       std::sin(2 * double(i) * std::numbers::pi / double(N))};
+        radius * point{std::cos(2 * double(i) * M_PI / double(N)),
+                       std::sin(2 * double(i) * M_PI / double(N))};
   }
 }
 

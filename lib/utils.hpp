@@ -69,7 +69,7 @@ constexpr inline auto order_by(InputIt first, InputIt last,
                                OrderIt indices_first) {
   const auto N = std::distance(first, last);
   return order_by_n(first, unsigned(N), indices_first);
-};
+}
 
 template <typename InputIt, typename OrderIt>
 constexpr inline auto order_to(InputIt first, InputIt last,

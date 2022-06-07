@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEFAULT_OUTPUT "@CMAKE_OUT_DIR/"
+#define DEFAULT_OUTPUT "@CMAKE_OUT_DIR@/"
 #define DEFAULT_SAMPLE_SIZE 1E6
 #define DEFAULT_N_BLOCKS 1E2
 #define SEEDS_PATH "@CMAKE_SOURCE_DIR@/data/seeds/"
