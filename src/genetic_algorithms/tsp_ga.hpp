@@ -48,16 +48,17 @@ public:
   FitnessMeasure evaluate(const Individual &individual) {
     // The first city is fixed
     FitnessMeasure total_distance{distance_l1(0, *individual.cbegin())};
-    //    for (auto i = std::next(individual.cbegin()); i < individual.cend();
-    //    i++) {
-    //      total_distance += xt::norm_l1(m_city_coordinates[*i] -
-    //                                    m_city_coordinates[*std::prev(i)])(0);
-    //    }
+#if __cplusplus >= 201703L
     total_distance = std::transform_reduce(
         individual.cbegin(), std::prev(individual.cend()),
         std::next(individual.cbegin()), total_distance, std::plus<>(),
         [&](const auto i, const auto j) { return distance_l1(i, j); });
-
+#else
+    for (auto i = std::next(individual.cbegin()); i < individual.cend(); i++) {
+      total_distance += distance_l1(*i, *std::prev(i));
+    }
+#endif
+    // TODO: sistemare 1664
     return std::max(static_cast<FitnessMeasure>(0),
                     static_cast<FitnessMeasure>(1664) - total_distance);
   }
