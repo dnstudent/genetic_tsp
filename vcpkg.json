@@ -1,5 +1,19 @@
 {
   "name": "genetic-tsp",
   "version": "0.0.1",
-  "dependencies": ["xtensor", "xsimd", "catch2"]
+  "dependencies": [
+    "xtensor",
+    "xsimd",
+    "catch2",
+    "rapidcsv",
+    "indicators",
+    "cxxopts"
+  ],
+  "overrides": [
+    {
+      "name": "catch2",
+      "version": "2.13.9"
+    }
+  ],
+  "builtin-baseline": "203f5f3bef28ffccb667fdce97bcde7a88aba4e6"
 }

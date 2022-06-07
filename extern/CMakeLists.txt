@@ -1,2 +1,2 @@
 add_subdirectory(ariel_random)
-include_directories()
+add_subdirectory(lcg)

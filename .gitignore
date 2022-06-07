@@ -3,3 +3,4 @@
 /.idea/
 *.pdf
 /LSN_Exercises_09.ipynb
+*.ipynb_checkpoints
