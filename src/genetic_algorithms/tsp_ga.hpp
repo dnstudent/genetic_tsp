@@ -28,11 +28,10 @@ public:
   typedef std::array<city_index, N_CITIES - 1> Individual;
   typedef double FitnessMeasure;
 
-  template <class Container>
-  explicit TSP(const Container &city_coordinates)
+  TSP(TSP &&) noexcept = default;
+  explicit TSP(const std::array<Coordinates, N_CITIES> &city_coordinates)
       : m_city_coordinates(city_coordinates),
         m_cut_distribution(0, N_CITIES - 2) {}
-  TSP(TSP &&) noexcept = default;
 
   template <typename PopulationIt, class RNG>
   void generate(PopulationIt first_individual, size_t N, RNG &rng) {
