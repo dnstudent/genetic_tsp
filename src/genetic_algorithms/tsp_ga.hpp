@@ -57,9 +57,7 @@ public:
       total_distance += distance_l1(*i, *std::prev(i));
     }
 #endif
-    // TODO: sistemare 1664
-    return std::max(static_cast<FitnessMeasure>(0),
-                    static_cast<FitnessMeasure>(1664) - total_distance);
+    return static_cast<FitnessMeasure>(1) / total_distance;
   }
 
   template <typename PopulationIt, typename EvaluationsIt, typename OutPopIt,
