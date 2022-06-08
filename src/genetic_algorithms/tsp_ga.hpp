@@ -28,7 +28,7 @@ public:
   typedef std::array<city_index, N_CITIES - 1> Individual;
   typedef double FitnessMeasure;
 
-  TSP(TSP &&) noexcept = default;
+  TSP(TSP &&) = default;
   explicit TSP(const std::array<Coordinates, N_CITIES> &city_coordinates)
       : m_city_coordinates(city_coordinates),
         m_cut_distribution(0, N_CITIES - 2) {}
@@ -47,7 +47,7 @@ public:
   FitnessMeasure evaluate(const Individual &individual) {
     // The first city is fixed
     FitnessMeasure total_distance{distance_l1(0, *individual.cbegin())};
-#if __cplusplus >= 201703L
+#if __cplusplus >= 202002L
     total_distance = std::transform_reduce(
         individual.cbegin(), std::prev(individual.cend()),
         std::next(individual.cbegin()), total_distance, std::plus<>(),
@@ -131,7 +131,7 @@ private:
 
   [[nodiscard]] FitnessMeasure distance_l1(const size_t x,
                                            const size_t y) const {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 202002L
     return std::transform_reduce(
         std::cbegin(m_city_coordinates[x]), std::cend(m_city_coordinates[x]),
         std::cbegin(m_city_coordinates[y]), FitnessMeasure(0), std::plus<>(),
